@@ -8,7 +8,7 @@ const PROFILE_IMAGE_PATH = (username)=>{
 };
 
 const CONNECTION_IMAGE_PATH = (connection_id)=>{
-    return path.resolve(__projectDir + `/public/connection/${connection_id}.jpg`);
+    return path.resolve(__projectDir + `/public/connectionimages/${connection_id}.jpg`);
 };
 
 const EVENT_IMAGE_PATH = (event_id)=>{

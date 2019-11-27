@@ -49,12 +49,14 @@ class DBConnections {
      /**
      * 
      * @param {Array.<String>} usernames 
+     * @returns {Promise<{usernames: String[], connection_id}[]>}
      */
     async connectUsers(usernames, image_id)
     {
         // let connections = [];
         let connections_collection = this.collection();
-        
+        let connections = [];
+
         for(let i=0; i<usernames.length;i++)
         {   
             let username = usernames[i];
@@ -71,6 +73,8 @@ class DBConnections {
             {
                 throw Errors.USERS.ERROR_USER_DOESNT_EXIST;
             }
+
+            
             
             for (let j = i + 1; j < usernames.length; j++) {
                 // connections.push([usernames[i], usernames[j]]);
@@ -83,10 +87,34 @@ class DBConnections {
                     time: Date.now().toString(),
                     image_id 
                 });
+
+                console.log(`"${usernames[i]}" has connected to "${usernames[j]}"`);
+
+                connections.push({connection_id: id, usernames: connection});
             }
-        }                
+        }     
+        
+        return connections;
     }
 
+    async deleteConnection(connection_id) {
+        if(connection_id) {
+            let docRef = this.collection().doc(connection_id);
+            let doc = await docRef.get();
+            let data = doc.data();
+            
+            if(doc.exists) {                
+                console.log(`disconnecting users "${data.usernames[0]}" and "${data.usernames[1]}"`);
+                await docRef.delete();
+            }
+            else {
+                console.log(`connection does not exist: ${connection_id}`);
+            }
+        }
+        else{
+            
+        }
+    }
 }
 
 module.exports = DBConnections;

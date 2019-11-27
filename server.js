@@ -367,7 +367,7 @@ app.post('/createEvent', async (req,res)=> {
     }
 });
 
-app.post('/getProfile', async (req,res)=> {
+app.post('/getUser', async (req,res)=> {
     let username = req.body.username;
 
     try {
@@ -487,7 +487,7 @@ app.post('/connect', upload.single('image_file'), async (req,res)=>{
         let time = Date.now();
         let usernames = await PythonScripts.get_face_usernames(image_file);        
         let after = Date.now();
-
+        
         if(usernames.indexOf(username) == -1)
         {
             throw Errors.FACE.ERROR_USER_NOT_IN_IMAGE;
@@ -501,9 +501,26 @@ app.post('/connect', upload.single('image_file'), async (req,res)=>{
         console.log(`Time taken to process connection: ${after - time}`);
         
         let image_id = uuid.v1().toString();
-        await dbconnections.connectUsers(usernames, image_id);
-        Files.MoveImage(image_file.path,Paths.PROFILE_IMAGE_PATH(image_id)); 
-        Respond.Success(usernames, res);        
+        let connections = await dbconnections.connectUsers(usernames, image_id);
+        
+        Files.MoveImage(image_file.path,Paths.CONNECTION_IMAGE_PATH(image_id)); 
+        
+        let responseConnections = [];
+
+        for(let connection of connections) {
+            let connectedUsername = connection.usernames[0];            
+            if(connectedUsername == username) {
+                connectedUsername = connection.usernames[1];
+            }
+            //push the username that is not mine
+            responseConnections.push({
+                connection_id: connection.connection_id,
+                username: connectedUsername
+            })                
+        }
+
+        //RESPONSE NEEDS TO BE {username: xxxxx, connection_id: xxxxx}
+        Respond.Success(responseConnections, res);        
     } catch (error) {
         if(image_file !== undefined)
         {
@@ -514,6 +531,25 @@ app.post('/connect', upload.single('image_file'), async (req,res)=>{
         Respond.Error(error, res);
     }
 });
+
+
+app.post('/undoConnect', async (req,res)=> {
+    let connection_id = req.body.connection_id;
+    
+    try {
+        CheckRequiredFields({connection_id});                        
+        let connections = await dbconnections.deleteConnection(connection_id);            
+        Respond.Success(connection_id, res);        
+    } catch (error) {        
+        console.log(error);
+        Respond.Error(error, res);
+    }
+})
+
+app.get('/getFaceEncodings', async (req,res) => {    
+    
+    res.sendFile(Paths.FACE_ENCODING_LIBRARY_PATH);
+})
 
 app.listen(config.port,()=>{
     console.log(`=====SERVER STARTED ON PORT: ${config.port}=====`);
