@@ -49,7 +49,13 @@ def main():
 	library_path = arg.library_path
 
 	#load image
-	selfie_img = face_recognition.load_image_file(arg.image_path)
+	# image compression to 50%
+	image = Image.open(arg.image_path)
+	width, height = image.size
+	image = image.resize((width//2, height//2))
+	selfie_img = np.array(image)
+
+	# selfie_img = face_recognition.load_image_file(arg.image_path) old
 	face_locations = face_recognition.face_locations(selfie_img)
 	face_encodings = face_recognition.face_encodings(selfie_img, face_locations)
 
