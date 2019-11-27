@@ -40,8 +40,10 @@ def jsonPrint(connector_ls):
 
 
 def main():
-	
-	connector_ls = []
+
+	face_thresshold = 6/10 # perectage of the largest face image
+	connector_ls = [] #list of touple of (face_side, name)
+	user_reg_ls = [] # final user out list
 
 	arg=argParser()
 	library_path = arg.library_path
@@ -73,7 +75,8 @@ def main():
 		best_match_idx = np.argmin(face_distances)
 		if matches[best_match_idx]:
 			name = getKey(img_dict, known_face_encodings[best_match_idx])
-			connector_ls.append(name)
+			# connector_ls.append(name) old
+			connector_ls.append((abs(top-bottom), name))
 		
 		# Draw a box around the face using the Pillow module
 		draw.rectangle(((left, top), (right, bottom)), outline=(0, 0, 255))
@@ -87,8 +90,16 @@ def main():
 	# Remove the drawing library from memory as per the Pillow docs
 	del draw
 
+	#extract only face with large enough bounding box
+	#with respect to the largest face image
+	max_face_side = max(connector_ls)[0]
+	for face in connector_ls:
+		if (face[0] >= max_face_side*(face_thresshold)):
+			user_reg_ls.append(face[1])
+
+
 	# jsonPrint(connector_ls)
-	print(json.dumps(connector_ls))
+	print(json.dumps(user_reg_ls))
 	# Display the resulting image UNCOMMENT TO SEE
 	# plt.imshow(pil_img)
 	# plt.show()
