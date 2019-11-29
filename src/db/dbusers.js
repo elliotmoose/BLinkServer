@@ -59,6 +59,31 @@ class DBUsers {
     }    
 
     /**
+     * Returns a list of all users
+     * @param {string[]} usernames 
+     */
+    async getUsersFromUsernames(usernames){        
+        var users = [];
+        try {
+            var snapshot = await this.collection().get();
+            snapshot.forEach((user)=> {                
+
+                let userData = user.data();
+                if(usernames.indexOf(userData.username) != -1) {
+                    userData.face_encoding = undefined;
+                    userData.password = undefined;
+                    users.push(userData);
+                }
+            })    
+            
+        } catch (error) {
+            console.log(Errors.USERS.ERROR_USER_RETRIEVAL_FAILED);
+        }
+    
+        return users;        
+    }    
+
+    /**
      * 
      * @param {*} username 
      * @returns {Promise<User>} returns a user

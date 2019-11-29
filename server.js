@@ -40,8 +40,6 @@ const storage = multer.diskStorage({
 
 const upload = multer({storage});
 
-JSON.parse(`["x"]`)
-
 firebase.initializeApp({
     credential: firebase.credential.cert(serviceAccount),
     databaseURL: "https://blink-4df57.firebaseio.com"
@@ -64,8 +62,9 @@ app.use(bodyParse.json());
 app.use(bodyParse.urlencoded({extended: false }));
 app.set('json spaces', 2);
 
-app.get('/', (req,res)=>{
-    res.send("Hello World");
+// dbconnections.connectUsers(["sidharth", "mooselliot", "viet"], "12345");
+app.get('/', async (req,res)=>{
+    await dbconnections.connectUsers(["mooselliot", "sidharth"], "12345");
 });
 
 app.post('/login', async (req,res)=>{
@@ -377,6 +376,22 @@ app.post('/getUser', async (req,res)=> {
     } catch (error) {
         console.log(error);
         Respond.Error(error, res);
+    }
+});
+
+app.post('/getMutualConnections', async (req,res) => {
+    let username = req.body.username;
+    let profileUsername = req.body.profileUsername;
+
+    try {
+        CheckRequiredFields({username, profileUsername});
+        let mutualConnections = await dbconnections.getMutualConnectionsForUsers(username, profileUsername);        
+        let mutualUsers = await dbusers.getUsersFromUsernames(mutualConnections);
+        Respond.Success(mutualUsers, res);
+
+    } catch (error) {
+        console.log(error);
+        Respond.Error(error,res);
     }
 });
 

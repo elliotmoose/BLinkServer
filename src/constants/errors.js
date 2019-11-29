@@ -89,6 +89,13 @@ module.exports = {
             message : "The image could not be assigned to this user. Please try again later"            
         }
     },
+    CONNECTION: {
+        ERROR_ALREADY_CONNECTED : {            
+            status: "ERROR_ALREADY_CONNECTED",
+            statusText : "Error",
+            message : "Users already connected"        
+        },
+    },
     PYTHON : {
         ERROR_FACE_ENCODING_FAILED : {            
             status: "ERROR_FACE_ENCODING_FAILED",

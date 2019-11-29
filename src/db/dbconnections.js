@@ -9,6 +9,24 @@ class DBConnections {
         return this.firestore.collection("connections");
     }
 
+    async getConnectionsForUser(username) {
+        let snapshot = await this.collection().where("usernames", "array-contains", username).get();
+
+        let connections = [];
+        snapshot.forEach((doc) => {
+            let connection = doc.data();
+
+            let otherUsername = connection.usernames[0];
+            if(otherUsername == username) {
+                otherUsername = connection.usernames[1];
+            }
+
+            connections.push(otherUsername);
+        });                
+
+        return connections;
+    }
+
     /**
      * 
      * @param {*} username 
@@ -53,8 +71,7 @@ class DBConnections {
      */
     async connectUsers(usernames, image_id)
     {
-        // let connections = [];
-        let connections_collection = this.collection();
+        
         let connections = [];
 
         for(let i=0; i<usernames.length;i++)
@@ -78,11 +95,20 @@ class DBConnections {
             
             for (let j = i + 1; j < usernames.length; j++) {
                 // connections.push([usernames[i], usernames[j]]);
-                let connection = [usernames[i], usernames[j]];                
-                //so that retrieval is easy, connection sorted
+                let connection = [usernames[i], usernames[j]];    
+                
+                //ensure consistency for duplicate checking
+
                 connection.sort();
+                //check if connection already exists
+                let checkDuplicateSnapshot = await this.collection().where("usernames", "==", connection).get();
+                if(checkDuplicateSnapshot.size != 0) {
+                    console.log(`${Errors.CONNECTION.ERROR_ALREADY_CONNECTED.message}: ${connection[0]} and ${connection[1]}`);
+                    continue;
+                }
+
                 let id = uuidv1().toString();
-                await connections_collection.doc(id).set({
+                await this.collection().doc(id).set({
                     usernames: connection,
                     time: Date.now().toString(),
                     image_id 
@@ -114,6 +140,20 @@ class DBConnections {
         else{
             
         }
+    }
+
+    async getMutualConnectionsForUsers(usernameA, usernameB) {
+        let connectionsA = await this.getConnectionsForUser(usernameA);
+        let connectionsB = await this.getConnectionsForUser(usernameB);
+
+        let mutualConnections = [];
+        for(let username of connectionsA) {
+            if(connectionsB.indexOf(username) != -1) {
+                mutualConnections.push(username);
+            }   
+        }
+
+        return mutualConnections;
     }
 }
 
