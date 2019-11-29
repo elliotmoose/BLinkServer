@@ -10,7 +10,7 @@ class DBRegistrations {
     }
 
     async registerUserForEvent(username, event_id) {
-        console.log(`registering ${username} for event with id: ${event_id}`);
+        console.log(`registering "${username}" for event with id: "${event_id}"`);
         let event_registrations = await this.collection().doc(event_id).get();
 
         if (event_registrations.exists) {

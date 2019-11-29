@@ -336,7 +336,9 @@ app.post('/registrationsForEvent', async (req,res)=> {
     try {
         CheckRequiredFields({event_id});
         let registrations = await dbregistrations.registrationsForEvent(event_id);        
-        Respond.Success(registrations, res);
+        let registrationUsernames = registrations.map((registration)=>registration.username);        
+        let registrationUsers = await dbusers.getUsersFromUsernames(registrationUsernames);
+        Respond.Success(registrationUsers, res);
     } catch (error) {
         Respond.Error(error, res);
     }
