@@ -10,18 +10,30 @@ class DBRegistrations {
     }
     
 
-    async getRegistrations(){
+    /**
+     * @returns {Promise<{event : String[]}>}
+     */
+    async getRegistrationUsernames(){
         let event_registrations_snapshot = await this.collection().get();
 
-        let eventRegistrations = {};
+        let eventRegistrationUsernames = {};
+        //for each event
         event_registrations_snapshot.forEach((eventregistrationDoc) => {
             let event_id = eventregistrationDoc.id;
-            let registrationDataObject = eventregistrationDoc.data();
-            let registrationDataArray = Object.keys(registrationDataObject).map((username) => registrationDataObject[username]);
-            eventRegistrations[event_id] = registrationDataArray;
+            //get registration data
+            let registrationData = eventregistrationDoc.data();
+            //map all usernames to event arrays                        
+            //if no registrations yet
+            if(eventRegistrationUsernames[registrationData.event_id] == undefined) {
+                eventRegistrationUsernames[registrationData.event_id] = [registrationData.username];//set registration
+            }
+            else {
+                eventRegistrationUsernames[registrationData.event_id].push(registrationData.username);
+            }       
         })
         
-        return eventRegistrations;
+        // console.log(eventRegistrationUsernames);
+        return eventRegistrationUsernames;
     }
 
     async registerUserForEvent(username, event_id) {

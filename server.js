@@ -48,6 +48,7 @@ firebase.initializeApp({
 const firestore = firebase.firestore();
 
 // const dbinit = new DBInit(firestore);
+// dbinit.initRegistration();
 // dbinit.initializeDB();
 const dbusers = new DBUsers(firestore);
 const dbevents = new DBEvents(firestore);
@@ -259,21 +260,29 @@ app.post('/getEvents', async (req,res)=> {
         let past_ids = eventsForUser.attended_event_ids;
 
         
-        let eventRegistrations = await dbregistrations.getRegistrations();        
+        let eventRegistrationUsernamesByEvent = await dbregistrations.getRegistrationUsernames();                  
+        let usersCache = {};
+
+        let usernames = Object.values(eventRegistrationUsernamesByEvent).reduce((prev, curr) => prev.concat(curr));
+        let users = await dbusers.getUsersFromUsernames(usernames);        
+
+        users.forEach((user) => usersCache[user.username] = user);        
         
         let output = {
             upcoming : [],
             past : [],
             explore : []
-        }
+        };
         
         for(let event of events) {
             
             //attach event registrations to event
             let participants = [];
 
-            if(eventRegistrations[event.event_id]) {
-                participants = eventRegistrations[event.event_id];
+            let registrationUsernames = eventRegistrationUsernamesByEvent[event.event_id];            
+            if(registrationUsernames) {
+                let registrationsUserData = registrationUsernames.map((username) => usersCache[username]);
+                participants = registrationsUserData;
             }
 
             event.participants = participants;
