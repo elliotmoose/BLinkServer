@@ -8,6 +8,21 @@ class DBRegistrations {
     collection() {
         return this.firestore.collection("registrations");
     }
+    
+
+    async getRegistrations(){
+        let event_registrations_snapshot = await this.collection().get();
+
+        let eventRegistrations = {};
+        event_registrations_snapshot.forEach((eventregistrationDoc) => {
+            let event_id = eventregistrationDoc.id;
+            let registrationDataObject = eventregistrationDoc.data();
+            let registrationDataArray = Object.keys(registrationDataObject).map((username) => registrationDataObject[username]);
+            eventRegistrations[event_id] = registrationDataArray;
+        })
+        
+        return eventRegistrations;
+    }
 
     async registerUserForEvent(username, event_id) {
         console.log(`registering "${username}" for event with id: "${event_id}"`);

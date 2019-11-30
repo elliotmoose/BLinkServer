@@ -258,13 +258,27 @@ app.post('/getEvents', async (req,res)=> {
         let upcoming_ids = eventsForUser.unattended_event_ids;
         let past_ids = eventsForUser.attended_event_ids;
 
+        
+        let eventRegistrations = await dbregistrations.getRegistrations();        
+        
         let output = {
             upcoming : [],
             past : [],
             explore : []
         }
+        
         for(let event of events) {
-            if (past_ids.indexOf(event.event_id) != -1 ) {
+            
+            //attach event registrations to event
+            let participants = [];
+
+            if(eventRegistrations[event.event_id]) {
+                participants = eventRegistrations[event.event_id];
+            }
+
+            event.participants = participants;
+
+            if (past_ids.indexOf(event.event_id) != -1 ) {                
                 output.past.push(event);
             }
             else if (upcoming_ids.indexOf(event.event_id) != -1 ){                
