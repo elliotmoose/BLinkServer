@@ -453,8 +453,7 @@ app.post('/getConnectionsSummary', async (req,res) => {
         //1: Get the recent connection users
         //2 Get the suggested Users
 
-        let connections = await dbconnections.getRecentConnectionsForUser(username);
-
+        let connections = await dbconnections.getRecentConnectionsForUser(username);        
         let recent = [];
         let recommended = [];
         let all = [];
@@ -478,6 +477,7 @@ app.post('/getConnectionsSummary', async (req,res) => {
             if (userData != undefined && userData.username != username) {                
                 userData.password = undefined;
                 userData.face_encoding = undefined;
+                userData.connection = connection;
 
                 const sevenDays = 60*60*24*7*1000;                
                 if((Date.now() - parseInt(connection.time)) < sevenDays){
@@ -538,6 +538,27 @@ app.get('/getEventImage/:event_id', (req, res) => {
         Respond.Error(error,res);
     }
 });
+
+app.get('/getConnectionImage/:event_id', (req, res) => {
+    var event_id = req.params.event_id;
+
+    try {
+        CheckRequiredFields({event_id});
+        var imagePath = Paths.CONNECTION_IMAGE_PATH(event_id);
+        if (fs.existsSync(imagePath)) {
+            res.sendFile(imagePath);
+        }
+        else {
+            throw Errors.RESOURCE.ERROR_RESOURCE_NOT_FOUND;
+        }
+        
+    } catch (error) {
+        console.log(error);
+        console.log(event_id);
+        Respond.Error(error,res);
+    }
+});
+
 
 /**
  * Takes in an image, and connects users in the image
