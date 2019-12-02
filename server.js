@@ -65,7 +65,7 @@ app.set('json spaces', 2);
 
 // dbconnections.connectUsers(["sidharth", "mooselliot", "viet"], "12345");
 app.get('/', async (req,res)=>{
-    await dbconnections.connectUsers(["mooselliot", "sidharth"], "12345");
+    // await dbconnections.connectUsers(["mooselliot", "sidharth"], "12345");
 });
 
 app.post('/login', async (req,res)=>{
@@ -551,7 +551,8 @@ app.post('/connect', upload.single('image_file'), async (req,res)=>{
         let time = Date.now();
         let usernames = await PythonScripts.get_face_usernames(image_file);        
         let after = Date.now();
-        
+        console.log(usernames)
+
         if(usernames.indexOf(username) == -1)
         {
             throw Errors.FACE.ERROR_USER_NOT_IN_IMAGE;
