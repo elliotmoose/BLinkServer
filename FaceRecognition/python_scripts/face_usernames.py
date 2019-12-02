@@ -50,12 +50,12 @@ def main():
 
 	#load image
 	# image compression to 50%
-	image = Image.open(arg.image_path)
-	width, height = image.size
-	image = image.resize((width//2, height//2))
-	selfie_img = np.array(image)
+	# image = Image.open(arg.image_path)
+	# width, height = image.size
+	# image = image.resize((width//2, height//2))
+	# selfie_img = np.array(image)
 
-	# selfie_img = face_recognition.load_image_file(arg.image_path) old
+	selfie_img = face_recognition.load_image_file(arg.image_path)
 	face_locations = face_recognition.face_locations(selfie_img)
 	face_encodings = face_recognition.face_encodings(selfie_img, face_locations)
 
@@ -98,10 +98,11 @@ def main():
 
 	#extract only face with large enough bounding box
 	#with respect to the largest face image
-	max_face_side = max(connector_ls)[0]
-	for face in connector_ls:
-		if (face[0] >= max_face_side*(face_thresshold)):
-			user_reg_ls.append(face[1])
+	if connector_ls:
+		max_face_side = max(connector_ls)[0]
+		for face in connector_ls:
+			if (face[0] >= max_face_side*(face_thresshold)):
+				user_reg_ls.append(face[1])
 
 
 	# jsonPrint(connector_ls)
