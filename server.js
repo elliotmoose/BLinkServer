@@ -310,7 +310,7 @@ app.get('/getEventDetail', async (req,res)=> {
 
     try {
         CheckRequiredFields({event_id});        
-        let eventDetail = await dbevents.getEventDetail(event_id);
+        let eventDetail = await dbevents.getEventWithId(event_id);
         Respond.Success(eventDetail, res);        
     } catch (error) {
         console.log(error);
@@ -328,6 +328,13 @@ app.post('/registerForEvent', async (req,res)=> {
         if(!exists){
             throw Errors.USERS.ERROR_USER_DOESNT_EXIST;
         }
+
+        let event = await dbevents.getEventWithId(event_id);
+
+        if(!event) {
+            throw Errors.EVENTS.ERROR_EVENT_DOESNT_EXIST;
+        }
+
         await dbregistrations.registerUserForEvent(username, event_id);        
         Respond.Success(Responses.REGISTER_SUCCESS, res);
     } catch (error) {
@@ -347,7 +354,7 @@ app.post('/markAttendanceForEvent', async (req,res)=> {
             throw Errors.USERS.ERROR_USER_DOESNT_EXIST;
         }
         await dbregistrations.markUserAttendanceForEvent(username, event_id);        
-        Respond.Success(Responses.REGISTER_SUCCESS, res);
+        Respond.Success(Responses.ATTENDANCE_MARK_SUCCESS, res);
     } catch (error) {
         Respond.Error(error, res);
     }
@@ -359,10 +366,16 @@ app.post('/registrationsForEvent', async (req,res)=> {
     try {
         CheckRequiredFields({event_id});
         let registrations = await dbregistrations.registrationsForEvent(event_id);        
-        let registrationUsernames = registrations.map((registration)=>registration.username);        
+        let registrationUsernames = Object.values(registrations).map((registration)=>registration.username);        
         let registrationUsers = await dbusers.getUsersFromUsernames(registrationUsernames);
+        registrationUsers.forEach((user) => {
+            let regData = registrations[user.username];
+            user.attended = regData.attended;
+        })
+        
         Respond.Success(registrationUsers, res);
     } catch (error) {
+        console.log(error);
         Respond.Error(error, res);
     }
 });
@@ -397,6 +410,17 @@ app.post('/getUser', async (req,res)=> {
     try {
         CheckRequiredFields({username});        
         let userData = await dbusers.getUser(username);
+        Respond.Success(userData, res);        
+    } catch (error) {
+        console.log(error);
+        Respond.Error(error, res);
+    }
+});
+
+app.get('/getUsers', async (req,res)=> {    
+
+    try {
+        let userData = await dbusers.getUsers();
         Respond.Success(userData, res);        
     } catch (error) {
         console.log(error);

@@ -31,7 +31,7 @@ class DBEvents {
         return events;       
     }
 
-    async getEventDetail(event_id)
+    async getEventWithId(event_id)
     {
         try {
             var event = await this.collection().doc(event_id).get();
@@ -46,7 +46,7 @@ class DBEvents {
         } catch (error) {
             throw error;
         }   
-    }
+    }    
 
     async getEventDataFromIds(event_ids) {
         
