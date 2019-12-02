@@ -1,5 +1,5 @@
 const Errors = require('../constants/errors');
-
+const uuid = require('uuid');
 class DBRegistrations {
     constructor(firestore) {
         this.firestore = firestore;
@@ -38,59 +38,51 @@ class DBRegistrations {
 
     async registerUserForEvent(username, event_id) {
         console.log(`registering "${username}" for event with id: "${event_id}"`);
-        let event_registrations = await this.collection().doc(event_id).get();
+        let event_registrations = await this.collection().where("event_id","==",event_id).get();
 
-        if (event_registrations.exists) {
-            let event_registration_data = event_registrations.data();
+        let registeredAlready = false;
 
-            event_registration_data[username] = {
-                username: username,
-                attended: false,
-                dateRegistered: Date.now().toString(),
-                dateAttended: 0
+        event_registrations.forEach((registrationDoc) => {
+            if(registrationDoc.data().username == username) {
+                registeredAlready = true;
             }
-
-            await this.collection().doc(event_id).set(event_registration_data);
+        })
+        
+        if (registeredAlready) {
+            console.log(`"${username}" has has already registered for event with id "${event_id}"`);
         }
-        else //if the event hasnt had any registrations yet
+        else
         {
             let event_registration_data = {
-                [username]: {
-                    username: username,
-                    attended: false,
-                    dateRegistered: Date.now().toString(),
-                    dateAttended: 0
-                }
+                username: username,
+                event_id: event_id,
+                attended: false,
+                dateRegistered: Date.now().toString(),
+                dateAttended: 0                    
             };
 
-            await this.collection().doc(event_id).set(event_registration_data);
+            let registration_id = uuid.v1().toString();
+            await this.collection().doc(registration_id).set(event_registration_data);
         }
 
     }
 
     async markUserAttendanceForEvent(username, event_id) {
-        let event_registrations = await this.collection().doc(event_id).get();
-
-        if (event_registrations.exists) {
-            let event_registration_data = event_registrations.data();
-            if (event_registration_data[username] === undefined) {
-                throw Errors.EVENTS.ERROR_USER_NOT_REGISTERED;
-            }
-            else {
-                event_registration_data[username] = {
-                    ...event_registration_data[username],
-                    attended: true,
-                    dateAttended: Date.now().toString(),
-                }
-                await this.collection().doc(event_id).set(event_registration_data);
-            }
-        }
-        else //if the event hasnt had any registrations yet
-        {
-            throw Errors.EVENTS.ERROR_EVENT_DOESNT_EXIST;
+        let snapshot = await this.collection().where("username", "==", username).where("event_id","==",event_id).get();        
+        
+        if(snapshot.size == 0) {
+            throw Errors.EVENTS.ERROR_USER_NOT_REGISTERED;                      
         }
 
-
+        snapshot.forEach(async (registerDoc)=> {
+            let event_registration_data = registerDoc.data();            
+            event_registration_data = {
+                ...event_registration_data,
+                attended: true,
+                dateAttended: Date.now().toString(),
+            }
+            await this.collection().doc(registerDoc.id).set(event_registration_data);            
+        });
     }
 
     async registrationsForEvent(event_id) {
@@ -101,8 +93,7 @@ class DBRegistrations {
         snapshot.forEach((event_registration) => {
             let regData = event_registration.data();            
             if(regData.event_id == event_id) {
-                registrations[regData.username] = regData
-                // registrations.push(regData);
+                registrations[regData.username] = regData                
             }
         });        
 
