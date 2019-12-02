@@ -417,7 +417,7 @@ app.post('/getUser', async (req,res)=> {
     }
 });
 
-app.post('/getUsers', async (req,res)=> {    
+app.get('/getUsers', async (req,res)=> {    
 
     try {
         let userData = await dbusers.getUsers();
