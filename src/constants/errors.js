@@ -115,6 +115,13 @@ module.exports = {
             message: "The resource you are looking for does not exist"
         }
     },
+    ATTENDANCE : {
+        ERROR_NO_ATTENDANCE : {
+            status : "ERROR_NO_ATTENDANCE",
+            statusText : "No attendance",
+            message: "There are no registrations for this event"
+        }        
+    },
     INVALID_REQUEST_ERROR : {
         status: "INVALID_REQUEST_ERROR",
         statusText : "Error",

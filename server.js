@@ -363,6 +363,7 @@ app.post('/registrationsForEvent', async (req,res)=> {
         let registrationUsers = await dbusers.getUsersFromUsernames(registrationUsernames);
         Respond.Success(registrationUsers, res);
     } catch (error) {
+        console.log(error);
         Respond.Error(error, res);
     }
 });

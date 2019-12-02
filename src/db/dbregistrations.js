@@ -94,17 +94,17 @@ class DBRegistrations {
     }
 
     async registrationsForEvent(event_id) {
-        let event_registrations = await this.collection().doc(event_id).get();
-
-        if (event_registrations.exists) {
-            let event_registration_data = event_registrations.data();
-            let registrations = Object.keys(event_registration_data).map((key)=>event_registration_data[key]);
-            return registrations;
-        }
-        else
-        {
-            throw Errors.EVENTS.ERROR_EVENT_DOESNT_EXIST;
-        }
+        let snapshot = await this.collection().get();        
+        
+        let registrations = [];
+        snapshot.forEach((event_registration) => {
+            let regData = event_registration.data();
+            if(regData.event_id == event_id) {
+                registrations.push(regData);
+            }
+        });        
+        
+        return registrations;
     }    
 
     async getUserRegisteredEventIds(username) { 
