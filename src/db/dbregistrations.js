@@ -96,14 +96,16 @@ class DBRegistrations {
     async registrationsForEvent(event_id) {
         let snapshot = await this.collection().get();        
         
-        let registrations = [];
+        //hashmap byb username
+        let registrations = {};
         snapshot.forEach((event_registration) => {
-            let regData = event_registration.data();
+            let regData = event_registration.data();            
             if(regData.event_id == event_id) {
-                registrations.push(regData);
+                registrations[regData.username] = regData
+                // registrations.push(regData);
             }
         });        
-        
+
         return registrations;
     }    
 

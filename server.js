@@ -359,8 +359,13 @@ app.post('/registrationsForEvent', async (req,res)=> {
     try {
         CheckRequiredFields({event_id});
         let registrations = await dbregistrations.registrationsForEvent(event_id);        
-        let registrationUsernames = registrations.map((registration)=>registration.username);        
+        let registrationUsernames = Object.values(registrations).map((registration)=>registration.username);        
         let registrationUsers = await dbusers.getUsersFromUsernames(registrationUsernames);
+        registrationUsers.forEach((user) => {
+            let regData = registrations[user.username];
+            user.attended = regData.attended;
+        })
+        
         Respond.Success(registrationUsers, res);
     } catch (error) {
         console.log(error);
