@@ -48,6 +48,7 @@ firebase.initializeApp({
 const firestore = firebase.firestore();
 
 // const dbinit = new DBInit(firestore);
+// dbinit.initEvents();
 // dbinit.initRegistration();
 // dbinit.initializeDB();
 const dbusers = new DBUsers(firestore);
@@ -102,6 +103,23 @@ app.post('/loginOrg', async (req,res)=>{
             throw Errors.LOGIN.ERROR_WRONG_PASSWORD;
         }
     } catch (error) {
+        Respond.Error(error, res);
+    }
+});
+
+app.post('/updateFcmToken', async (req,res)=>{
+    let username = req.body.username;
+    let token = req.body.token;
+
+    try {
+        CheckRequiredFields({username, token});        
+
+        await dbusers.updateFcmToken(username, token);
+        console.log(`Updated token for user: ${username} \n Token: ${token}`);
+        Respond.Success(Responses.LOGIN_SUCCESS, res);
+
+    } catch (error) {
+        console.log(error);
         Respond.Error(error, res);
     }
 });

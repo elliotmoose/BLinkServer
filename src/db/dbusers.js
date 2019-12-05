@@ -175,6 +175,21 @@ class DBUsers {
         }
     }
 
+    async updateFcmToken(username, token) {
+        let userDoc = this.collection().doc(username);
+        let user = await userDoc.get();
+        if(!user.exists)
+        {
+            throw Errors.USERS.ERROR_USER_DOESNT_EXIST;
+        }
+        else
+        {    
+            let userData = user.data();                    
+            userData.token = token;
+            await userDoc.set(userData);         ;                        
+        }
+    }
+
 
     /**
      * 

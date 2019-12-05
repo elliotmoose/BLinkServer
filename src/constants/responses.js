@@ -19,6 +19,11 @@ module.exports = {
         statusText : "Success",
         message : "Register Successful"        
     },
+    FCM_TOKEN_UPDATE_SUCCESS : {
+        status: "FCM_TOKEN_UPDATE_SUCCESS",
+        statusText : "Success",
+        message : "Token Updated"        
+    },
 
     EVENT_CREATED_SUCCESS:{
         status: "EVENT_CREATED_SUCCESS",

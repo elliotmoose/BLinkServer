@@ -57,7 +57,7 @@ class DBInit {
             instagram : `@bgourd`,
             linkedin : `linkedin.com/in/seanmlim`,
             status : 'ACTIVE',
-
+            token :''
         }, {
             username : "mooselliot",
             password: password,
@@ -71,7 +71,7 @@ class DBInit {
             instagram : `@mooselliot`,
             linkedin : `linkedin.com/in/mooselliot`,
             status : 'ACTIVE',
-
+            token : ''
         }];
 
         for (let user of users_list) {
@@ -93,7 +93,8 @@ class DBInit {
             description: 'YO this event is gon be LIT',
             address: '8 Somapah Road',
             time: '7pm - 10pm',
-            price: 'FREE'
+            price: 'FREE',
+            tags: ["Jobs", "Tech", "Business"]
         }, {
             event_id: "event_b",
             event_name: 'Interview Workshop',
@@ -102,7 +103,8 @@ class DBInit {
             description: 'YO this event is gon be LIT',
             address: '8 Somapah Road',
             time: '6pm - 9pm',
-            price: 'FREE'
+            price: 'FREE',
+            tags: ["Jobs", "Tech", "Business"]
         }, {
             event_id: "event_c",
             event_name: 'Recruitment Talk',
@@ -111,7 +113,8 @@ class DBInit {
             description: 'YO this event is gon be LIT',
             address: '8 Somapah Road',
             time: '10am - 2pm',
-            price: 'FREE'
+            price: 'FREE',
+            tags: ["Jobs", "Tech", "Business"]
         }, {
             event_id: "event_d",
             event_name: 'Information Session',
@@ -120,7 +123,8 @@ class DBInit {
             description: 'YO this event is gon be LIT',
             address: '8 Somapah Road',
             time: '2pm - 3pm',
-            price: 'FREE'
+            price: 'FREE',
+            tags: ["Jobs", "Tech", "Business"]
         }, {
             event_id: "event_e",
             event_name: 'Interview Workshop',
@@ -129,7 +133,8 @@ class DBInit {
             description: 'YO this event is gon be LIT',
             address: '8 Somapah Road',
             time: '7pm - 10pm',
-            price: 'FREE'
+            price: 'FREE',
+            tags: ["Jobs", "Tech", "Business"]
         }];
 
 
