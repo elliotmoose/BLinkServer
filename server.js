@@ -49,7 +49,7 @@ const firestore = firebase.firestore();
 
 const dbinit = new DBInit(firestore);
 // dbinit.initEvents();
-dbinit.initUsers();
+// dbinit.initUsers();
 // dbinit.initRegistration();
 // dbinit.initializeDB();
 const dbusers = new DBUsers(firestore);
@@ -281,11 +281,14 @@ app.post('/getEvents', async (req,res)=> {
         
         let eventRegistrationUsernamesByEvent = await dbregistrations.getRegistrationUsernames();                  
         let usersCache = {};
+        
+        let values = Object.values(eventRegistrationUsernamesByEvent);
+        if (values.length != 0) {
+            let usernames = values.reduce((prev, curr) => prev.concat(curr));
+            let users = await dbusers.getUsersFromUsernames(usernames);        
+            users.forEach((user) => usersCache[user.username] = user);        
+        }
 
-        let usernames = Object.values(eventRegistrationUsernamesByEvent).reduce((prev, curr) => prev.concat(curr));
-        let users = await dbusers.getUsersFromUsernames(usernames);        
-
-        users.forEach((user) => usersCache[user.username] = user);        
         
         let output = {
             upcoming : [],
@@ -323,6 +326,22 @@ app.post('/getEvents', async (req,res)=> {
         }
         
         Respond.Success(output, res);        
+    } catch (error) {
+        console.log(error);
+        Respond.Error(error, res);
+    }
+});
+
+//gets the event_ids of the events that this user is registered for
+app.post('/getRegisteredEventIds', async (req,res) => {
+    let username = req.body.username;
+
+    try {                        
+        let eventsForUser = await dbregistrations.getUserRegisteredEventIds(username);                    
+        let event_ids = [];
+        eventsForUser.attended_event_ids.forEach(event_id => event_ids.push(event_id));
+        eventsForUser.unattended_event_ids.forEach(event_id => event_ids.push(event_id));
+        Respond.Success({[username] : event_ids}, res);        
     } catch (error) {
         console.log(error);
         Respond.Error(error, res);
