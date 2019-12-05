@@ -371,8 +371,29 @@ app.post('/markAttendanceForEvent', async (req,res)=> {
         if(!exists){
             throw Errors.USERS.ERROR_USER_DOESNT_EXIST;
         }
-        await dbregistrations.markUserAttendanceForEvent(username, event_id);        
-        Respond.Success(Responses.ATTENDANCE_MARK_SUCCESS, res);
+        let needsToNotify = await dbregistrations.markUserAttendanceForEvent(username, event_id);        
+        let token = await dbusers.getUserFcmToken(username);
+
+        if(!needsToNotify) {
+            console.log(`"${username}" attendance already marked`);
+        }
+        else {
+            if(!token) {
+                console.log(`"${username}" not registered for notifications`);
+            }
+            
+            let payload = {
+                notification : {
+                    title: 'Checked in!',
+                    body: 'Your attendance has been recorded.'
+                }
+            }
+            //notify user
+            await firebase.messaging().sendToDevice(token, payload);
+            console.log(`"${username}" attendance notified`);
+        }    
+            
+        Respond.Success(needsToNotify ? Responses.ATTENDANCE_MARK_SUCCESS : Responses.ATTENDANCE_MARK_ALREADY, res);
     } catch (error) {
         Respond.Error(error, res);
     }

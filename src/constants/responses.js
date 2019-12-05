@@ -14,6 +14,11 @@ module.exports = {
         statusText : "Success",
         message : "Attendance Marked"        
     },    
+    ATTENDANCE_MARK_ALREADY : {
+        status: "ATTENDANCE_MARK_ALREADY",
+        statusText : "Success",
+        message : "Attendance Already Marked"        
+    },    
     FACE_REGISTER_SUCCESS : {
         status: "FACE_REGISTER_SUCCESS",
         statusText : "Success",

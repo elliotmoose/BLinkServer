@@ -67,6 +67,12 @@ class DBRegistrations {
 
     }
 
+    /**
+     * 
+     * @param {*} username 
+     * @param {*} event_id 
+     * @returns {Promise<boolean>} Needs to notify
+     */
     async markUserAttendanceForEvent(username, event_id) {
         let snapshot = await this.collection().where("username", "==", username).where("event_id","==",event_id).get();        
         
@@ -74,8 +80,13 @@ class DBRegistrations {
             throw Errors.EVENTS.ERROR_USER_NOT_REGISTERED;                      
         }
 
+        var needsNotification = true;
         snapshot.forEach(async (registerDoc)=> {
-            let event_registration_data = registerDoc.data();            
+            let event_registration_data = registerDoc.data();     
+            if(event_registration_data.attended == true) {
+                needsNotification = false;
+            }
+
             event_registration_data = {
                 ...event_registration_data,
                 attended: true,
@@ -83,6 +94,8 @@ class DBRegistrations {
             }
             await this.collection().doc(registerDoc.id).set(event_registration_data);            
         });
+
+        return needsNotification; //needs to notify
     }
 
     async registrationsForEvent(event_id) {
