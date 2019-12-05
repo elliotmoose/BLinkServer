@@ -54,7 +54,7 @@ class DBInit {
             position : 'CEO',
             company : 'Veggie Wraps Inc.',
             facebook : `facebook.com/seanmlim`,
-            instagram : `@bgourd`,
+            instagram : `bgourd`,
             linkedin : `linkedin.com/in/seanmlim`,
             status : 'ACTIVE',
             token :''
@@ -68,7 +68,7 @@ class DBInit {
             position : 'Software Developer',
             company : 'MooseDev',
             facebook : `facebook.com/mooselliot`,
-            instagram : `@mooselliot`,
+            instagram : `mooselliot`,
             linkedin : `linkedin.com/in/mooselliot`,
             status : 'ACTIVE',
             token : ''
