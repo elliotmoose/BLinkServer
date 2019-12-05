@@ -28,10 +28,13 @@ def main():
 		return
 	face_encodings = face_recognition.face_encodings(user_img)
 	if len(face_encodings) != 0:
-		user_img_encoding = face_encodings[0]
-		user_img_encoding_jsoned = user_img_encoding.tolist()		
-		# print the encoded image
-		print(user_img_encoding_jsoned)
+		if len(face_encodings[0] != 0):
+			user_img_encoding = face_encodings[0]
+			user_img_encoding_jsoned = user_img_encoding.tolist()		
+			# print the encoded image
+			print(user_img_encoding_jsoned)
+		else:
+			print("FAILED_BAD_IMAGE_NOFACE");		
 	else:	
 		print("FAILED_BAD_IMAGE_NOFACE")		
 	

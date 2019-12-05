@@ -48,6 +48,7 @@ firebase.initializeApp({
 const firestore = firebase.firestore();
 
 // const dbinit = new DBInit(firestore);
+// dbinit.initEvents();
 // dbinit.initRegistration();
 // dbinit.initializeDB();
 const dbusers = new DBUsers(firestore);
@@ -65,7 +66,7 @@ app.set('json spaces', 2);
 
 // dbconnections.connectUsers(["sidharth", "mooselliot", "viet"], "12345");
 app.get('/', async (req,res)=>{
-    await dbconnections.connectUsers(["mooselliot", "sidharth"], "12345");
+    // await dbconnections.connectUsers(["mooselliot", "sidharth"], "12345");
 });
 
 app.post('/login', async (req,res)=>{
@@ -102,6 +103,23 @@ app.post('/loginOrg', async (req,res)=>{
             throw Errors.LOGIN.ERROR_WRONG_PASSWORD;
         }
     } catch (error) {
+        Respond.Error(error, res);
+    }
+});
+
+app.post('/updateFcmToken', async (req,res)=>{
+    let username = req.body.username;
+    let token = req.body.token;
+
+    try {
+        CheckRequiredFields({username, token});        
+
+        await dbusers.updateFcmToken(username, token);
+        console.log(`Updated token for user: ${username} \n Token: ${token}`);
+        Respond.Success(Responses.LOGIN_SUCCESS, res);
+
+    } catch (error) {
+        console.log(error);
         Respond.Error(error, res);
     }
 });
@@ -281,7 +299,12 @@ app.post('/getEvents', async (req,res)=> {
 
             let registrationUsernames = eventRegistrationUsernamesByEvent[event.event_id];            
             if(registrationUsernames) {
-                let registrationsUserData = registrationUsernames.map((username) => usersCache[username]);
+                let registrationsUserData = [];
+                registrationUsernames.forEach(element => {
+                    if(element != username) {
+                        registrationsUserData.push(usersCache[element]);
+                    }    
+                })
                 participants = registrationsUserData;
             }
 
@@ -353,8 +376,29 @@ app.post('/markAttendanceForEvent', async (req,res)=> {
         if(!exists){
             throw Errors.USERS.ERROR_USER_DOESNT_EXIST;
         }
-        await dbregistrations.markUserAttendanceForEvent(username, event_id);        
-        Respond.Success(Responses.ATTENDANCE_MARK_SUCCESS, res);
+        let needsToNotify = await dbregistrations.markUserAttendanceForEvent(username, event_id);        
+        let token = await dbusers.getUserFcmToken(username);
+
+        if(!needsToNotify) {
+            console.log(`"${username}" attendance already marked`);
+        }
+        else {
+            if(!token) {
+                console.log(`"${username}" not registered for notifications`);
+            }
+            
+            let payload = {
+                notification : {
+                    title: 'Checked in!',
+                    body: 'Your attendance has been recorded.'
+                }
+            }
+            //notify user
+            await firebase.messaging().sendToDevice(token, payload);
+            console.log(`"${username}" attendance notified`);
+        }    
+            
+        Respond.Success(needsToNotify ? Responses.ATTENDANCE_MARK_SUCCESS : Responses.ATTENDANCE_MARK_ALREADY, res);
     } catch (error) {
         Respond.Error(error, res);
     }
@@ -453,8 +497,7 @@ app.post('/getConnectionsSummary', async (req,res) => {
         //1: Get the recent connection users
         //2 Get the suggested Users
 
-        let connections = await dbconnections.getRecentConnectionsForUser(username);
-
+        let connections = await dbconnections.getRecentConnectionsForUser(username);        
         let recent = [];
         let recommended = [];
         let all = [];
@@ -478,6 +521,7 @@ app.post('/getConnectionsSummary', async (req,res) => {
             if (userData != undefined && userData.username != username) {                
                 userData.password = undefined;
                 userData.face_encoding = undefined;
+                userData.connection = connection;
 
                 const sevenDays = 60*60*24*7*1000;                
                 if((Date.now() - parseInt(connection.time)) < sevenDays){
@@ -539,6 +583,27 @@ app.get('/getEventImage/:event_id', (req, res) => {
     }
 });
 
+app.get('/getConnectionImage/:event_id', (req, res) => {
+    var event_id = req.params.event_id;
+
+    try {
+        CheckRequiredFields({event_id});
+        var imagePath = Paths.CONNECTION_IMAGE_PATH(event_id);
+        if (fs.existsSync(imagePath)) {
+            res.sendFile(imagePath);
+        }
+        else {
+            throw Errors.RESOURCE.ERROR_RESOURCE_NOT_FOUND;
+        }
+        
+    } catch (error) {
+        console.log(error);
+        console.log(event_id);
+        Respond.Error(error,res);
+    }
+});
+
+
 /**
  * Takes in an image, and connects users in the image
  */
@@ -551,7 +616,8 @@ app.post('/connect', upload.single('image_file'), async (req,res)=>{
         let time = Date.now();
         let usernames = await PythonScripts.get_face_usernames(image_file);        
         let after = Date.now();
-        
+        console.log(usernames)
+
         if(usernames.indexOf(username) == -1)
         {
             throw Errors.FACE.ERROR_USER_NOT_IN_IMAGE;

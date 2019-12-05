@@ -59,7 +59,7 @@ was seen as a success due to the large turnouts and club-profits raised for the 
             instagram : `@bgourd`,
             linkedin : `linkedin.com/in/seanmlim`,
             status : 'ACTIVE',
-
+            token :''
         }, {
             username : "mooselliot",
             password: password,
@@ -75,7 +75,7 @@ was seen as a success due to the large turnouts and club-profits raised for the 
             instagram : `@mooselliot`,
             linkedin : `linkedin.com/in/mooselliot`,
             status : 'ACTIVE',
-
+            token : ''
         }];
 
         for (let user of users_list) {
@@ -97,7 +97,8 @@ was seen as a success due to the large turnouts and club-profits raised for the 
             description: 'A biannual event that provides networking opportunities for both companies, and students to mingle and get to know each other better. We also host an Industry Night twice a year, generally in September and October. The Industry Night in September takes place after the Learning Celebration Carnival and gives our students the opportunity to present the projects they were working on during the summer internship. Both the Industry Nights in September and October are provide networking opportunities for both companies, and students to mingle and get to know each other better. Whilst it serves primarily as a networking event, it is not uncommon for companies to present jobs and scout for potential interns/employees during Industry Night. ',
             address: '8 Somapah Road',
             time: '7pm - 10pm',
-            price: 'FREE'
+            price: 'FREE',
+            tags: ["Jobs", "Tech", "Business"]
         }, {
             event_id: "event_b",
             event_name: 'Interview Workshop',
@@ -106,7 +107,8 @@ was seen as a success due to the large turnouts and club-profits raised for the 
             description: 'Join Googlers for an interactive workshop featuring technical interview best practices, tips & tricks, and sample questions for software engineering and associate product manager full-time and intern roles.',
             address: '1 Expo Drive, Singapore 486150',
             time: '6pm - 9pm',
-            price: 'FREE'
+            price: 'FREE',
+            tags: ["Jobs", "Tech", "Business"]
         }, {
             event_id: "event_c",
             event_name: 'Recruitment Talk',
@@ -115,7 +117,8 @@ was seen as a success due to the large turnouts and club-profits raised for the 
             description:"What if you can join a company where you can make an impact? You can. Join us at Mastercard. Code means something more to us. It doesn't just refer to a complex set of numerical values but a set of moral values, too. Every day we build technology that makes the world a safer, smarter place for all of us. ",
             address: '8 Somapah Road',
             time: '10am - 2pm',
-            price: 'FREE'
+            price: 'FREE',
+            tags: ["Jobs", "Tech", "Business"]
         }, {
             event_id: "event_d",
             event_name: 'Information Session',
@@ -124,7 +127,8 @@ was seen as a success due to the large turnouts and club-profits raised for the 
             description: "Facebook Real-Time Communication Overview of Facebook's real-time communication infrastructure and the product experiences it enables for our billions of users. We will go into details on how a new video calling product is developed from start to finish at Facebook. Starting from a basic product idea and market research, going through design explorations and iterations, user research, engineering iterations, internal and public testing, and eventually launching to the general public. We will also talk about some of the key pieces of technologies and architectures that we employ to build a scalable and efficient system to enable the best user experience. You will also get a glimpse of what it means to be an engineer at Facebook and what the day-to-day life is like as an engineer at work.",
             address: '89 Straits View Marina One, 018937',
             time: '2pm - 3pm',
-            price: 'FREE'
+            price: 'FREE',
+            tags: ["Jobs", "Tech", "Business"]
         }, {
             event_id: "event_e",
             event_name: 'Interview Workshop (UPOP)',
@@ -133,7 +137,8 @@ was seen as a success due to the large turnouts and club-profits raised for the 
             description: 'The Undergraduate Practice Opportunities Program (UPOP) is a programme that aims to develop our undergraduates to be career-ready. Through the practical and experiential sessions conducted by the career advisors and professional consultants, students will acquire relevant career skills to help them navigate the graduate employment market.',
             address: '8 Somapah Road',
             time: '7pm - 10pm',
-            price: 'FREE'
+            price: 'FREE',
+            tags: ["Jobs", "Tech", "Business"]
         }];
 
 

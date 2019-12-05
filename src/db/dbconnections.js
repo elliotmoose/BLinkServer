@@ -46,7 +46,9 @@ class DBConnections {
 
             connections.push({
                 username: otherUsername,
-                time: connection.time
+                time: connection.time,
+                connection_id: doc.id,
+                image_id: connection.image_id
             });
         });                
 
