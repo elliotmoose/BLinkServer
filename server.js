@@ -49,6 +49,7 @@ const firestore = firebase.firestore();
 
 // const dbinit = new DBInit(firestore);
 // dbinit.initEvents();
+// dbinit.initUsers();
 // dbinit.initRegistration();
 // dbinit.initializeDB();
 const dbusers = new DBUsers(firestore);
