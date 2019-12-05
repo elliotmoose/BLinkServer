@@ -299,7 +299,12 @@ app.post('/getEvents', async (req,res)=> {
 
             let registrationUsernames = eventRegistrationUsernamesByEvent[event.event_id];            
             if(registrationUsernames) {
-                let registrationsUserData = registrationUsernames.map((username) => usersCache[username]);
+                let registrationsUserData = [];
+                registrationUsernames.forEach(element => {
+                    if(element != username) {
+                        registrationsUserData.push(usersCache[element]);
+                    }    
+                })
                 participants = registrationsUserData;
             }
 
