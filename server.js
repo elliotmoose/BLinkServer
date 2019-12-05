@@ -392,10 +392,7 @@ app.post('/markAttendanceForEvent', async (req,res)=> {
 
     try {
         CheckRequiredFields({username, event_id});
-        let exists = await dbusers.userExists(username);
-        if(!exists){
-            throw Errors.USERS.ERROR_USER_DOESNT_EXIST;
-        }
+        let user = await dbusers.getUser(username);                
         let needsToNotify = await dbregistrations.markUserAttendanceForEvent(username, event_id);        
         let token = await dbusers.getUserFcmToken(username);
 
@@ -410,7 +407,7 @@ app.post('/markAttendanceForEvent', async (req,res)=> {
             let payload = {
                 notification : {
                     title: 'Checked in!',
-                    body: 'Your attendance has been recorded.'
+                    body: `Enjoy the event ${user.displayname}`
                 }
             }
             //notify user
