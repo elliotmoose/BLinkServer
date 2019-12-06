@@ -43,11 +43,12 @@ const upload = multer({storage});
 firebase.initializeApp({
     credential: firebase.credential.cert(serviceAccount),
     databaseURL: "https://blink-4df57.firebaseio.com"
+    // databaseURL: "https://blink2-ff965.firebaseio.com"
 });
 
 const firestore = firebase.firestore();
 
-const dbinit = new DBInit(firestore);
+// const dbinit = new DBInit(firestore);
 // dbinit.initEvents();
 // dbinit.initUsers();
 // dbinit.initRegistration();
@@ -655,15 +656,18 @@ app.post('/connect', upload.single('image_file'), async (req,res)=>{
         let responseConnections = [];
 
         for(let connection of connections) {
-            let connectedUsername = connection.usernames[0];            
-            if(connectedUsername == username) {
-                connectedUsername = connection.usernames[1];
+            //if it was my connection
+            if(connection.usernames[0] == username || connection.usernames[1] == username) {
+                let connectedUsername = connection.usernames[0];            
+                if(connectedUsername == username) {
+                    connectedUsername = connection.usernames[1];
+                }
+                //push the username that is not mine
+                responseConnections.push({
+                    connection_id: connection.connection_id,
+                    username: connectedUsername
+                })                                
             }
-            //push the username that is not mine
-            responseConnections.push({
-                connection_id: connection.connection_id,
-                username: connectedUsername
-            })                
         }
 
         //RESPONSE NEEDS TO BE {username: xxxxx, connection_id: xxxxx}
