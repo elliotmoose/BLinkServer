@@ -1,8 +1,8 @@
 const path = require('path');
 
 const __projectDir = `${__dirname}/../../`;
-const CREDENTIALS_PATH = path.resolve(__projectDir + 'credentials/blink2-ff965-firebase-adminsdk-pr4su-1c4f81ab21.json');
-// const CREDENTIALS_PATH = path.resolve(__projectDir + 'credentials/blink-4df57-firebase-adminsdk-0wo3v-abda4aeb6e.json');
+// const CREDENTIALS_PATH = path.resolve(__projectDir + 'credentials/blink2-ff965-firebase-adminsdk-pr4su-1c4f81ab21.json');
+const CREDENTIALS_PATH = path.resolve(__projectDir + 'credentials/blink-4df57-firebase-adminsdk-0wo3v-abda4aeb6e.json');
 const FACE_ENCODING_LIBRARY_PATH = path.resolve(__projectDir + `FaceRecognition/python_scripts/face_encoding_library.json`);
 const PROFILE_IMAGE_PATH = (username)=>{
     return path.resolve(__projectDir + `/public/profileimages/${username}.jpg`);
